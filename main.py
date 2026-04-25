@@ -127,7 +127,7 @@ def verificar_empate(matriz: Matriz) -> bool:
         Verdadeiro caso todas as casas preenchidas
     """
 
-    return all([all(l) for l in matriz])
+    return all((all(l) for l in matriz))
 
 
 def game_terminado(matriz: Matriz) -> bool:
@@ -140,6 +140,11 @@ def game_terminado(matriz: Matriz) -> bool:
     return verificar_empate(matriz) or verificar_ganhador(matriz)
 
 
+def jogada_aleatoria(matriz: Matriz) -> Cordenada:
+    """Escolhe aleatoriamente uma jogada"""
+    return choice(possiveis_jogadas(matriz))
+
+
 if __name__ == '__main__':
     campo = gerar_matriz()
 
@@ -149,7 +154,7 @@ if __name__ == '__main__':
         pos_player = player_jogada % len(campo), player_jogada // len(campo)
         realizar_jogada(campo, pos_player, 1)
 
-        pos_cpu = choice(possiveis_jogadas(campo))
+        pos_cpu = jogada_aleatoria(campo)
         realizar_jogada(campo, pos_cpu, 2)
 
 
