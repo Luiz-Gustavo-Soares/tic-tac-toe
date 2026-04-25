@@ -5,11 +5,14 @@ from random import choice
 Matriz = List[List]
 Cordenada = Tuple[int, int]
 
-simbolos = {
-    0: ' ',
+jogadores = {    
     1: 'X',
     2: 'O'
-}
+    }
+
+simbolos = {
+    0: ' ',
+} | jogadores
 
 
 def gerar_matriz(x:int = 3) -> Matriz:
@@ -59,7 +62,7 @@ def realizar_jogada(matriz: Matriz, pos: Cordenada, jogador_key:int) -> Matriz:
         uma nova matriz com a jogada realizada
     """
 
-    if jogador_key not in simbolos.keys():
+    if jogador_key not in jogadores.keys():
         raise ValueError('Chave de jogador Invalida')
     
     x, y = pos
