@@ -91,7 +91,7 @@ def verificar_ganhador(matriz: Matriz) -> int:
     Args: 
         matriz: Matriz a ser verificada
     Returns:
-        key do ganhador ou 0
+        key do ganhador ou None
     """
 
     n = len(matriz)
@@ -117,7 +117,7 @@ def verificar_ganhador(matriz: Matriz) -> int:
     if val != 0 and all(matriz[n - 1 - i][i] == val for i in range(n)):
         return val
 
-    return 0
+    return None
 
 
 def verificar_empate(matriz: Matriz) -> bool:
@@ -138,9 +138,7 @@ def game_terminado(matriz: Matriz) -> bool:
     Returns: 
         Verdadeiro caso jogo finalizada
     """
-    if verificar_empate(matriz) or verificar_ganhador(matriz):
-        return True
-    return False
+    return verificar_empate(matriz) or verificar_ganhador(matriz)
 
 
 if __name__ == '__main__':
