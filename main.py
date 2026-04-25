@@ -70,9 +70,8 @@ def realizar_jogada(matriz: Matriz, pos: Cordenada, jogador_key:int) -> Matriz:
     if matriz[y][x] != 0:
         raise ValueError('Posicao de jogada Invalida')
     
-    n_matriz = copy.deepcopy(matriz)
-    n_matriz[y][x] = jogador_key
-    return n_matriz
+    matriz[y][x] = jogador_key
+    return matriz
     
 
 def possiveis_jogadas(matriz: Matriz) -> List[Cordenada]:
@@ -148,10 +147,10 @@ if __name__ == '__main__':
         print_board(campo)
         player_jogada = int(input('Qual casa voce quer jogar? [1 - 9]'))-1
         pos_player = player_jogada % len(campo), player_jogada // len(campo)
-        campo = realizar_jogada(campo, pos_player, 1)
+        realizar_jogada(campo, pos_player, 1)
 
         pos_cpu = choice(possiveis_jogadas(campo))
-        campo = realizar_jogada(campo, pos_cpu, 2)
+        realizar_jogada(campo, pos_cpu, 2)
 
 
     print_board(campo)
