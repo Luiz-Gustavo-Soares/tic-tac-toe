@@ -7,7 +7,7 @@ Cordenada = Tuple[int, int]
 
 jogadores = {    
     1: 'X',
-    2: 'O'
+    -1: 'O'
     }
 
 simbolos = {
@@ -145,24 +145,58 @@ def jogada_aleatoria(matriz: Matriz) -> Cordenada:
     return choice(possiveis_jogadas(matriz))
 
 
-if __name__ == '__main__':
-    campo = gerar_matriz()
+def minimax(matriz: Matriz, maximizar: bool):
+    if game_terminado(matriz):
+        ganhador = verificar_ganhador(matriz)
+        return ganhador if ganhador is not None else 0
 
+    if maximizar:
+        value = -float('inf')
+        for jogada in possiveis_jogadas(matriz):
+            value = max(value, minimax(realizar_jogada(copy.deepcopy(matriz), jogada, 1), False))
+    else:
+        value = float('inf')
+        for jogada in possiveis_jogadas(matriz):
+            value = min(value, minimax(realizar_jogada(copy.deepcopy(matriz), jogada, -1), True))
+
+    return value
+
+
+def jogada_minimax(matriz: Matriz) -> Cordenada:
+    jogadas = possiveis_jogadas(matriz)
+    results = []
+    for j in jogadas:
+        nova = copy.deepcopy(matriz)
+        realizar_jogada(nova, j, -1)
+        results.append((minimax(nova, True), j))
+    print(results)
+    return min(results, key=lambda x: x[0])[1]
+
+
+if __name__ == '__main__':
+    
+    jogador_fase = True
+    
+    campo = gerar_matriz()
     while not game_terminado(campo):
         print_board(campo)
-        player_jogada = int(input('Qual casa voce quer jogar? [1 - 9]'))-1
-        pos_player = player_jogada % len(campo), player_jogada // len(campo)
-        realizar_jogada(campo, pos_player, 1)
-
-        pos_cpu = jogada_aleatoria(campo)
-        realizar_jogada(campo, pos_cpu, 2)
+        if jogador_fase:
+            player_jogada = int(input('Qual casa voce quer jogar? [1 - 9] '))-1
+            pos_player = player_jogada % len(campo), player_jogada // len(campo)
+            realizar_jogada(campo, pos_player, 1)
+        else:
+            pos_cpu = jogada_minimax(campo)
+            print(pos_cpu)
+            realizar_jogada(campo, pos_cpu, -1)
+        
+        jogador_fase = not jogador_fase
 
 
     print_board(campo)
     gg = verificar_ganhador(campo)
     if gg == 1:
         print('Voce ganhou')
-    elif gg == 2:
+    elif gg == -1:
         print('Voce perdeu')
     else:
         print('Empate')
