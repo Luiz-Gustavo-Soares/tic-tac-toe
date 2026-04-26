@@ -1,7 +1,7 @@
 from typing import List, Tuple
 from random import choice
 
-Matriz = List[List]
+Matriz = List[List[int]]
 Cordenada = Tuple[int, int]
 
 jogadores = {    
@@ -136,7 +136,7 @@ def game_terminado(matriz: Matriz) -> bool:
     Returns: 
         Verdadeiro caso jogo finalizada
     """
-    return verificar_empate(matriz) or verificar_ganhador(matriz)
+    return verificar_empate(matriz) or verificar_ganhador(matriz) is not None
 
 
 def jogada_aleatoria(matriz: Matriz) -> Cordenada:
@@ -156,6 +156,7 @@ def avaliar(matriz: Matriz) -> int:
     if ganhador == 1: return -1
     if ganhador == 2: return 1
     return 0
+
 
 def minimax(matriz: Matriz, maximizar: bool):
     if game_terminado(matriz):
@@ -192,15 +193,21 @@ def jogada_minimax(matriz: Matriz) -> Cordenada:
 
 if __name__ == '__main__':
     
-    jogador_fase = not True
+    jogador_fase = input('Deseja comecar jogando? [s/n]').lower() == 's'
     
     campo = gerar_matriz(3)
     while not game_terminado(campo):
         print_board(campo)
         if jogador_fase:
-            player_jogada = int(input('Qual casa voce quer jogar? [1 - 9] '))-1
-            pos_player = player_jogada % len(campo), player_jogada // len(campo)
-            realizar_jogada(campo, pos_player, 1)
+            while True:
+                try:
+                    player_jogada = int(input('Qual casa voce quer jogar? [1 - 9] '))-1
+                    pos_player = player_jogada % len(campo), player_jogada // len(campo)
+                    realizar_jogada(campo, pos_player, 1)
+                except ValueError:
+                    print('Jogada Invalida')
+                else: 
+                    break
         else:
             pos_cpu = jogada_minimax(campo)
             realizar_jogada(campo, pos_cpu, 2)
@@ -211,8 +218,8 @@ if __name__ == '__main__':
     print_board(campo)
     gg = verificar_ganhador(campo)
     if gg == 1:
-        print('Voce ganhou')
+        print('Voce ganhou!')
     elif gg == 2:
-        print('Voce perdeu')
+        print('Voce perdeu!')
     else:
-        print('Empate')
+        print('Empate!')
