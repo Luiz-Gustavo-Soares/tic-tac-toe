@@ -1,5 +1,4 @@
 from typing import List, Tuple
-import copy
 from random import choice
 
 Matriz = List[List]
@@ -7,7 +6,7 @@ Cordenada = Tuple[int, int]
 
 jogadores = {    
     1: 'X',
-    -1: 'O'
+    2: 'O'
     }
 
 simbolos = {
@@ -47,7 +46,7 @@ def print_board(matriz: Matriz):
         print(*[simbolos[l] for l in line], sep=' | ')
 
         if i != len(line) - 1:
-            print('--+---+--')
+            print(*['-']*len(matriz), sep='-+-')
 
     print('\n')
 
@@ -145,19 +144,37 @@ def jogada_aleatoria(matriz: Matriz) -> Cordenada:
     return choice(possiveis_jogadas(matriz))
 
 
+def avaliar(matriz: Matriz) -> int:
+    """Avalia se a jogada é boa ou nao para a cpu
+    Args: 
+        matriz: matriz a ser analizada
+    Returns: 
+        1 vitoria, 0 empate, -1 derrota
+    """
+    ganhador = verificar_ganhador(matriz)
+    
+    if ganhador == 1: return -1
+    if ganhador == 2: return 1
+    return 0
+
 def minimax(matriz: Matriz, maximizar: bool):
     if game_terminado(matriz):
-        ganhador = verificar_ganhador(matriz)
-        return ganhador if ganhador is not None else 0
+        return avaliar(matriz)
 
     if maximizar:
         value = -float('inf')
         for jogada in possiveis_jogadas(matriz):
-            value = max(value, minimax(realizar_jogada(copy.deepcopy(matriz), jogada, 1), False))
+            x, y = jogada
+            matriz[y][x] = 2
+            value = max(value, minimax(matriz, False))
+            matriz[y][x] = 0
     else:
         value = float('inf')
         for jogada in possiveis_jogadas(matriz):
-            value = min(value, minimax(realizar_jogada(copy.deepcopy(matriz), jogada, -1), True))
+            x, y = jogada
+            matriz[y][x] = 1
+            value = min(value, minimax(matriz, True))
+            matriz[y][x] = 0
 
     return value
 
@@ -166,18 +183,18 @@ def jogada_minimax(matriz: Matriz) -> Cordenada:
     jogadas = possiveis_jogadas(matriz)
     results = []
     for j in jogadas:
-        nova = copy.deepcopy(matriz)
-        realizar_jogada(nova, j, -1)
-        results.append((minimax(nova, True), j))
-    print(results)
-    return min(results, key=lambda x: x[0])[1]
+        x, y = j
+        matriz[y][x] = 2
+        results.append((minimax(matriz, False), j))
+        matriz[y][x] = 0
+    return max(results, key=lambda x: x[0])[1]
 
 
 if __name__ == '__main__':
     
-    jogador_fase = True
+    jogador_fase = not True
     
-    campo = gerar_matriz()
+    campo = gerar_matriz(3)
     while not game_terminado(campo):
         print_board(campo)
         if jogador_fase:
@@ -186,9 +203,8 @@ if __name__ == '__main__':
             realizar_jogada(campo, pos_player, 1)
         else:
             pos_cpu = jogada_minimax(campo)
-            print(pos_cpu)
-            realizar_jogada(campo, pos_cpu, -1)
-        
+            realizar_jogada(campo, pos_cpu, 2)
+
         jogador_fase = not jogador_fase
 
 
@@ -196,7 +212,7 @@ if __name__ == '__main__':
     gg = verificar_ganhador(campo)
     if gg == 1:
         print('Voce ganhou')
-    elif gg == -1:
+    elif gg == 2:
         print('Voce perdeu')
     else:
         print('Empate')
