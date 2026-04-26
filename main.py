@@ -144,23 +144,35 @@ def jogada_aleatoria(matriz: Matriz) -> Cordenada:
     return choice(possiveis_jogadas(matriz))
 
 
-def avaliar(matriz: Matriz) -> int:
+def avaliar(matriz: Matriz, profundidade: int) -> int:
     """Avalia se a jogada é boa ou nao para a cpu
     Args: 
         matriz: matriz a ser analizada
+        profundidade: profundidade do no
     Returns: 
-        1 vitoria, 0 empate, -1 derrota
+        valor quantificado se a jogada é boa ou nao
     """
     ganhador = verificar_ganhador(matriz)
     
-    if ganhador == 1: return -1
-    if ganhador == 2: return 1
+    if ganhador == 1: return profundidade - 10 
+    if ganhador == 2: return 10 - profundidade
     return 0
 
 
-def minimax(matriz: Matriz, maximizar: bool, alfa: float=-float('inf'), beta: float=float('inf')) -> float:
+def minimax(matriz: Matriz, maximizar: bool, alfa: float=-float('inf'), beta: float=float('inf'), profundidade: int=0) -> float:
+    """Implementacao do algoritmo minimax
+    Args: 
+        matriz: matriz a ser calculada
+        maximizar: difini se vai maximizar ou minimizar
+        alfa: variavel alfa para poda
+        beta: variavel beta para poda
+        profundidade: profundidade do nó
+    Returns:
+        
+    """
+
     if game_terminado(matriz):
-        return avaliar(matriz)
+        return avaliar(matriz, profundidade)
 
     if maximizar:
         value = -float('inf')
@@ -168,7 +180,7 @@ def minimax(matriz: Matriz, maximizar: bool, alfa: float=-float('inf'), beta: fl
             x, y = jogada
             
             matriz[y][x] = 2
-            value = max(value, minimax(matriz, False, alfa, beta))
+            value = max(value, minimax(matriz, False, alfa, beta, profundidade+1))
             alfa = max(alfa, value)
             matriz[y][x] = 0
 
@@ -180,7 +192,7 @@ def minimax(matriz: Matriz, maximizar: bool, alfa: float=-float('inf'), beta: fl
             x, y = jogada
             
             matriz[y][x] = 1
-            value = min(value, minimax(matriz, True, alfa, beta))
+            value = min(value, minimax(matriz, True, alfa, beta, profundidade+1))
             beta = min(beta, value)
             matriz[y][x] = 0
 
