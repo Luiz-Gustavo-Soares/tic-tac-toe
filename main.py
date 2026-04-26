@@ -158,7 +158,7 @@ def avaliar(matriz: Matriz) -> int:
     return 0
 
 
-def minimax(matriz: Matriz, maximizar: bool):
+def minimax(matriz: Matriz, maximizar: bool, alfa: float=-float('inf'), beta: float=float('inf')) -> float:
     if game_terminado(matriz):
         return avaliar(matriz)
 
@@ -166,16 +166,26 @@ def minimax(matriz: Matriz, maximizar: bool):
         value = -float('inf')
         for jogada in possiveis_jogadas(matriz):
             x, y = jogada
+            
             matriz[y][x] = 2
-            value = max(value, minimax(matriz, False))
+            value = max(value, minimax(matriz, False, alfa, beta))
+            alfa = max(alfa, value)
             matriz[y][x] = 0
+
+            if beta <= alfa:
+                break
     else:
         value = float('inf')
         for jogada in possiveis_jogadas(matriz):
             x, y = jogada
+            
             matriz[y][x] = 1
-            value = min(value, minimax(matriz, True))
+            value = min(value, minimax(matriz, True, alfa, beta))
+            beta = min(beta, value)
             matriz[y][x] = 0
+
+            if beta <= alfa:
+                break
 
     return value
 
@@ -195,7 +205,7 @@ if __name__ == '__main__':
     
     jogador_fase = input('Deseja comecar jogando? [s/n]').lower() == 's'
     
-    campo = gerar_matriz(3)
+    campo = gerar_matriz(4)
     while not game_terminado(campo):
         print_board(campo)
         if jogador_fase:
